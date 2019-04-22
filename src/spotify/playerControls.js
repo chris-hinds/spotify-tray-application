@@ -1,6 +1,7 @@
 import * as Constants from "../contsants";
 // Player Controls
 export const playerNextTrack = async token => {
+  console.log(token);
   return fetch(`${Constants.SPOTIFY_PLAYER_ENDPOINT}/next`, {
     headers: {
       Authorization: `Bearer ${token}`,

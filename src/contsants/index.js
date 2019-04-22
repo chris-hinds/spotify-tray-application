@@ -2,6 +2,7 @@
 export const ACTION_PLAYER_UPDATE = "ACTION_PLAYER_UPDATE";
 export const ACTION_SET_ACCESS_TOKEN = "ACTION_SET_ACCESS_TOKEN";
 export const ACTION_SET_USER_LOGIN = "ACTION_SET_USER_LOGIN";
+export const ACTION_SET_USER_LOGOUT = "ACTION_SET_USER_LOGOUT";
 
 // Player Control Actions
 export const ACTION_PLAYER_NEXT = "ACTION_PLAYER_NEXT";
@@ -14,3 +15,10 @@ export const ALBUM_ART_PLACEHOLDER =
 
 // Spotify
 export const SPOTIFY_PLAYER_ENDPOINT = "https://api.spotify.com/v1/me/player";
+
+// Initial Store States
+export const INITIAL_USER_STATE = {
+  loggedIn: false,
+  accessToken: "",
+  deviceId: null
+};

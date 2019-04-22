@@ -69,6 +69,6 @@ As of right now only basic playback controls have been implimented. There is ver
 - [ ] Implement player progress bar (duration and currentPosition variables are already available)
 - [x] Refactor to use Hooks and context for state management
 - [ ] Reactor logic to create the Spotofy player and the event listeners and move out of the App.jsx file
-- [ ] Figure out how to auto resize the Electron browser window based on the application height. For context I aim to add views to show upcoming tracks and and aplaylist selection, right now I would like this to appear underneat the player and for the window to expand it's height
+- [ ] Figure out how to auto resize the Electron browser window based on the application height. For context I aim to add views to show upcoming tracks and and playlist selection, right now I would like this to appear underneath the player and for the window to expand it's height
 - [ ] Add endpoint for selecting a random song/playlist/artist and start playback (Thought this might be a fun way to discover some new music)
 - [ ] Add many more things to this todo list :D

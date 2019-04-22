@@ -10,6 +10,11 @@ const setUserLogin = data => ({
   data
 });
 
+const setUserLogout = data => ({
+  type: Constants.ACTION_SET_USER_LOGOUT,
+  data
+});
+
 const userReducer = (playerState, action) => {
   const { data, type } = action;
 
@@ -21,9 +26,11 @@ const userReducer = (playerState, action) => {
         ...playerState,
         ...data
       };
+    case Constants.ACTION_SET_USER_LOGOUT:
+      return Constants.INITIAL_USER_STATE;
     default:
       return playerState;
   }
 };
 
-export { userReducer, setAccessToken, setUserLogin };
+export { userReducer, setAccessToken, setUserLogin, setUserLogout };

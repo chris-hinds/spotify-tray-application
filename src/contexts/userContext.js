@@ -1,18 +1,16 @@
 import React, { createContext, useReducer } from "react";
+import * as Constants from "../contsants";
 
 // reducer
 import { userReducer } from "../reducers/userReducer";
 
-const INITIAL_USER_STATE = {
-  loggedIn: false,
-  accessToken: "",
-  deviceId: null
-};
-
 const UserContext = createContext();
 
 const UserContextProvider = props => {
-  const [userState, userDispatch] = useReducer(userReducer, INITIAL_USER_STATE);
+  const [userState, userDispatch] = useReducer(
+    userReducer,
+    Constants.INITIAL_USER_STATE
+  );
 
   return (
     <UserContext.Provider value={{ userState, userDispatch }}>

@@ -5,10 +5,10 @@ import Player from "../player";
 import { PlayerContext } from "../../contexts/playerContext";
 import { playerUpdate } from "../../reducers/playerReducer";
 import { UserContext } from "../../contexts/userContext";
-import { setUserLogin } from "../../reducers/userReducer";
+import { setUserLogin, setUserLogout } from "../../reducers/userReducer";
 
 const App = () => {
-  const { localState, setLocalState } = useState();
+  const [localState, setLocalState] = useState();
   const { userState, userDispatch } = useContext(UserContext);
   const { playerDispatch } = useContext(PlayerContext);
 
@@ -26,13 +26,13 @@ const App = () => {
   }, []);
 
   const handleLogin = () => {
-    if (accessToken || accessToken !== "") {
-      // change the loggedIn variable, then start checking for the window.Spotify variable
-      userDispatch(setUserLogin({ loggedIn: true, accessToken: accessToken }));
-      playerCheckInterval = setInterval(() => checkForPlayer(), 1000);
-
+    if (localState) {
       // save token to local storage
-      window.localStorage.setItem("spotify-bar-token", accessToken);
+      window.localStorage.setItem("spotify-bar-token", localState);
+
+      // set login state and start checking for the player
+      userDispatch(setUserLogin({ loggedIn: true, accessToken: localState }));
+      playerCheckInterval = setInterval(() => checkForPlayer(), 1000);
     }
   };
 
@@ -41,7 +41,10 @@ const App = () => {
       console.error(`Init Error: ${message}`);
     });
     player.addListener("authentication_error", ({ message }) => {
-      // setState({ USER_INITIAL_STATE });
+      // remove token from local storage
+      window.localStorage.removeItem("spotify-bar-token");
+
+      userDispatch(setUserLogout());
       console.error(`Auth Error: ${message}`);
     });
     player.addListener("account_error", ({ message }) => {
@@ -57,7 +60,7 @@ const App = () => {
 
     player.addListener("ready", ({ device_id }) => {
       userDispatch(setUserLogin({ deviceId: device_id }));
-      transferPlaybackHere(accessToken, device_id);
+      transferPlaybackHere(device_id);
     });
 
     player.addListener("not_ready", ({ device_id }) => {
@@ -65,17 +68,17 @@ const App = () => {
     });
   };
 
-  const checkForPlayer = (accessToken = accessToken) => {
-    if (window.Spotify !== null || accessToken !== "") {
+  const checkForPlayer = () => {
+    if (window.Spotify !== null || localState !== "") {
       clearInterval(playerCheckInterval);
       const player = new window.Spotify.Player({
         name: "Spotify Web Player",
         getOAuthToken: cb => {
-          cb(accessToken);
+          cb(localState);
         }
       });
 
-      createEventHandlers(player, accessToken);
+      createEventHandlers(player);
 
       player.connect().then(success => {
         if (success) {
@@ -87,14 +90,11 @@ const App = () => {
     }
   };
 
-  const transferPlaybackHere = (
-    acccessToken = accessToken,
-    localDeviceId = deviceId
-  ) => {
+  const transferPlaybackHere = (localDeviceId = deviceId) => {
     fetch("https://api.spotify.com/v1/me/player", {
       method: "PUT",
       headers: {
-        authorization: `Bearer ${acccessToken}`,
+        authorization: `Bearer ${localState}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
@@ -112,7 +112,7 @@ const App = () => {
     );
   }
   return (
-    <div className="App">
+    <div>
       <div>
         <p className="App-intro">
           Enter your Spotify access token. Get it from{" "}
