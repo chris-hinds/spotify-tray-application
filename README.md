@@ -28,25 +28,25 @@ For now you can clone this repo and run the application locally.
 
 ## Installing
 
-1.
+1. Clone the repo
 
 ```
 git clone https://github.com/chinds185a/spotify-tray-application
 ```
 
-2.
+2. Enter the directory and installing th dependanices using YARN or NPM
 
 ```
 cd spotify-tray-application && yarn install
 ```
 
-3.
+3. Start the application and the dev server
 
 ```
 yarn electron-dev
 ```
 
-4. The tray application will start and will also open the chrome developer tools. If all goes well clcking on the new Spotify tray cion should open a small window with an input field to enter your Spotofy access token.
+The tray application will start and will also open the chrome developer tools. If all goes well clcking on the new Spotify tray cion should open a small window with an input field to enter your Spotofy access token.
 
 This view has no styles yet and is only here as a temporary mesaue until I have implimented an authentication server to handle the auth flow. You can get your auth token from [here](https://developer.spotify.com/documentation/web-playback-sdk/quick-start/#)
 
@@ -54,4 +54,4 @@ Clicking `go` should instansiate the Spotofy Web Playback SDK passing in your au
 
 Once the SDK is loaded and ready for use Spotfy playback should be transfered to the Spotify tray application and start playing, the tray application is treated as a Spotify Conect player so can be selected from your Spotify app as a playback device.
 
-5. As of right now only basic playback controls have been implimented. There is very little error handling so expect this to break. Without the auth server your token is only valid for an hour so after an hour the player will fail to authenticate presenting you with the token input screen again for a new token to be entered.
+As of right now only basic playback controls have been implimented. There is very little error handling so expect this to break. Without the auth server your token is only valid for an hour so after an hour the player will fail to authenticate presenting you with the token input screen again for a new token to be entered.
