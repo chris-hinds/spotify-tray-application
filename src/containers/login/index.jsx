@@ -9,20 +9,14 @@ const Login = ({ history }) => {
   const { userState, userDispatch } = useContext(UserContext);
 
   useEffect(() => {
-    console.log("hola, login page here");
     const localAccessToken = localStorage.getItem("authToken");
     if (localAccessToken) {
-      console.log(`got local access token`);
       userDispatch(setUserLogin({ accessToken: localAccessToken }));
-      console.log(userState);
       history.push("/player");
-    } else {
-      console.log("No token, time to gte a new one");
     }
   }, []);
 
   const handleLogin = () => {
-    console.log("dave");
     if (formValue !== "") {
       // save token to local storage
       localStorage.setItem("authToken", formValue);

@@ -6,17 +6,13 @@ import { UserContext } from "../../contexts/userContext";
 import { setUserLogin } from "../../reducers/userReducer";
 
 const Login = ({ history }) => {
-  const { userState, userDispatch } = useContext(UserContext);
+  const { userDispatch } = useContext(UserContext);
 
   useEffect(() => {
-    console.log("hola, landing page here");
     const localAccessToken = localStorage.getItem("authToken");
     if (localAccessToken) {
-      console.log(`got local access token`);
       userDispatch(setUserLogin({ accessToken: localAccessToken }));
       history.push("/player");
-    } else {
-      console.log("No token, time to gte a new one");
     }
   }, []);
 

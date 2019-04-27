@@ -16,8 +16,6 @@ const App = ({ history }) => {
   let playerCheckInterval = null;
 
   useEffect(() => {
-    console.log("hello, Im the player");
-
     playerCheckInterval = setInterval(() => checkForPlayer(), 1000);
   }, []);
 
@@ -25,8 +23,9 @@ const App = ({ history }) => {
     player.addListener("initialization_error", ({ message }) => {
       console.error(`Init Error: ${message}`);
     });
-    player.addListener("authentication_error", async ({ message }) => {
-      await userDispatch(setUserLogout());
+    player.addListener("authentication_error", ({ message }) => {
+      localStorage.removeItem("authToken");
+      userDispatch(setUserLogout());
       history.push("/");
       console.error(`Auth Error: ${message}`);
     });
@@ -52,7 +51,6 @@ const App = ({ history }) => {
   };
 
   const checkForPlayer = () => {
-    console.log("checking for the player");
     if (window.Spotify !== null && userState.accessToken) {
       clearInterval(playerCheckInterval);
       const player = new window.Spotify.Player({
@@ -74,14 +72,7 @@ const App = ({ history }) => {
     }
   };
 
-  // const logoutUser = () => {
-  //   clearInterval(playerCheckInterval);
-  //   userDispatch(setUserLogout());
-  //   history.push("/");
-  // };
-
   const transferPlaybackHere = (localDeviceId = deviceId) => {
-    console.log(accessToken);
     fetch("https://api.spotify.com/v1/me/player", {
       method: "PUT",
       headers: {
