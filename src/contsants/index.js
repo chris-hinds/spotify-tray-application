@@ -19,6 +19,6 @@ export const SPOTIFY_PLAYER_ENDPOINT = "https://api.spotify.com/v1/me/player";
 // Initial Store States
 export const INITIAL_USER_STATE = {
   loggedIn: false,
-  accessToken: "",
+  accessToken: null,
   deviceId: null
 };

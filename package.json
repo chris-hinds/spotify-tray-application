@@ -9,6 +9,7 @@
     "react-dom": "^16.8.6",
     "react-icons": "^3.6.1",
     "react-load-script": "^0.0.6",
+    "react-router-dom": "^5.0.0",
     "react-scripts": "2.1.8",
     "styled-components": "^4.2.0",
     "styled-css-grid": "^1.2.1",

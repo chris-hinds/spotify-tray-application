@@ -1,5 +1,6 @@
-const { app, BrowserWindow, ipcMain, Tray } = require("electron");
+const { app, BrowserWindow, Tray } = require("electron");
 const path = require("path");
+const os = require("os");
 const isDev = require("electron-is-dev");
 
 let tray = undefined;
@@ -51,6 +52,12 @@ const indexUrl = () => {
 const openDevTools = () => {
   if (isDev) {
     window.openDevTools({ mode: "detach" });
+    BrowserWindow.addDevToolsExtension(
+      path.join(
+        os.homedir(),
+        "/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/3.6.0_0"
+      )
+    );
   }
 };
 
