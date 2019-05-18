@@ -1,9 +1,11 @@
 import React, { useContext } from "react";
-import { Grid, Cell } from "styled-css-grid";
 
 // contexts & actions
 import { PlayerContext } from "../../contexts/playerContext";
 import { UserContext } from "../../contexts/userContext";
+
+// components
+import PlayerGrid from "../../components/player-grid";
 
 // spotify
 import {
@@ -14,37 +16,36 @@ import {
 } from "../../spotify/playerControls";
 
 // components
-import AlbumArt from "../../components/album-art";
+import AlbumArt from "../../containers/album-art";
 import PlayerMeta from "../../containers/player-meta";
 import PlayerControls from "../../containers/player-controls";
+import PlayerProgress from "../../containers/player-progress";
+import PlayerNextTracks from "../../containers/player-next-tracks";
 
 const Player = () => {
   const { playerState } = useContext(PlayerContext);
   const { userState } = useContext(UserContext);
-  const { currentTrack, duration, position, paused } = playerState;
+  const { currentTrack, nextTracks, duration, position, paused } = playerState;
   const { albumArtwork } = currentTrack;
 
   return (
-    <Grid columns={12} gap="8px">
-      <Cell width={4} height={2}>
-        <AlbumArt img={albumArtwork} />
-      </Cell>
-      <Cell width={8} height={1} middle center>
-        <PlayerMeta currentTrack={currentTrack} />
-      </Cell>
-      <Cell width={8} height={1} middle center>
-        <PlayerControls
-          playing={!paused}
-          playPause={
-            !paused
-              ? () => playerPause(userState.accessToken)
-              : () => playerPlay(userState.accessToken)
-          }
-          nextTrack={() => playerNextTrack(userState.accessToken)}
-          prevTrack={() => playerPrevTrack(userState.accessToken)}
-        />
-      </Cell>
-    </Grid>
+    <PlayerGrid>
+      <AlbumArt artwork={albumArtwork} />
+      <PlayerMeta currentTrack={currentTrack} />
+      <PlayerControls
+        playing={!paused}
+        playPause={
+          !paused
+            ? () => playerPause(userState.accessToken)
+            : () => playerPlay(userState.accessToken)
+        }
+        nextTrack={() => playerNextTrack(userState.accessToken)}
+        prevTrack={() => playerPrevTrack(userState.accessToken)}
+      />
+      <PlayerProgress duration={duration} position={position} />
+
+      {nextTracks && <PlayerNextTracks nextTracks={nextTracks} />}
+    </PlayerGrid>
   );
 };
 

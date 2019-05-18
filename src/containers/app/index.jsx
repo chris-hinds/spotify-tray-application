@@ -3,7 +3,7 @@ import Player from "../player";
 
 // contexts & actions
 import { PlayerContext } from "../../contexts/playerContext";
-import { playerUpdate } from "../../reducers/playerReducer";
+import { playerUpdate, playerTrackUpdate } from "../../reducers/playerReducer";
 import { UserContext } from "../../contexts/userContext";
 import { setUserLogin, setUserLogout } from "../../reducers/userReducer";
 
@@ -23,15 +23,18 @@ const App = ({ history }) => {
     player.addListener("initialization_error", ({ message }) => {
       console.error(`Init Error: ${message}`);
     });
+
     player.addListener("authentication_error", ({ message }) => {
       localStorage.removeItem("authToken");
       userDispatch(setUserLogout());
       history.push("/");
       console.error(`Auth Error: ${message}`);
     });
+
     player.addListener("account_error", ({ message }) => {
       console.error(`Aaccount error Error: ${message}`);
     });
+
     player.addListener("playback_error", ({ message }) => {
       console.error(`Playback Error: ${message}`);
     });
@@ -69,7 +72,34 @@ const App = ({ history }) => {
           );
         }
       });
+
+      getUserDetails();
+      setInterval(() => getPlaybackStatus(), 5000);
     }
+  };
+
+  const getUserDetails = async () => {
+    const response = await fetch("https://api.spotify.com/v1/me/", {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${accessToken}`
+      }
+    });
+
+    const { id, display_name } = await response.json();
+    userDispatch(setUserLogin({ id: id, name: display_name }));
+  };
+
+  const getPlaybackStatus = async () => {
+    const response = await fetch("https://api.spotify.com/v1/me/player", {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${accessToken}`
+      }
+    });
+
+    const { progress_ms } = await response.json();
+    playerDispatch(playerTrackUpdate({ position: progress_ms }));
   };
 
   const transferPlaybackHere = (localDeviceId = deviceId) => {

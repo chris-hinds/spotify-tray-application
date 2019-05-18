@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { MemoryRouter, Route } from "react-router-dom";
 
 // routes
 import PrivateRoute from "./routes/privateRoute";
@@ -7,23 +7,26 @@ import PrivateRoute from "./routes/privateRoute";
 // containers
 import App from "./containers/app";
 import Login from "./containers/login";
-import Landing from "./containers/landing";
 
 // contexts providers
 import { PlayerContextProvider } from "./contexts/playerContext";
 import { UserContextProvider } from "./contexts/userContext";
 
+// layouts
+import DefaultLayout from "./layouts/default";
+
 const Application = () => {
   return (
-    <Router>
+    <MemoryRouter>
       <UserContextProvider>
         <PlayerContextProvider>
-          <Route exact path="/" component={Landing} />
-          <PrivateRoute path="/player" component={App} />
-          <Route path="/login" component={Login} />
+          <DefaultLayout>
+            <Route path="/" exact component={Login} />
+            <PrivateRoute path="/player" component={App} />
+          </DefaultLayout>
         </PlayerContextProvider>
       </UserContextProvider>
-    </Router>
+    </MemoryRouter>
   );
 };
 

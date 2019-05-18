@@ -3,17 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "main": "public/electron.js",
+  "homepage": ".",
   "dependencies": {
+    "@craco/craco": "^5.1.0",
     "electron-is-dev": "^1.1.0",
+    "electron-packager": "^13.1.1",
+    "ipc": "^0.0.1",
+    "query-string": "^6.5.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-icons": "^3.6.1",
+    "react-lines-ellipsis": "^0.14.1",
     "react-load-script": "^0.0.6",
     "react-router-dom": "^5.0.0",
     "react-scripts": "2.1.8",
     "styled-components": "^4.2.0",
     "styled-css-grid": "^1.2.1",
     "the-platform": "^0.10.1",
+    "typescript": "^3.4.5",
     "use-spotify-web-playback-sdk": "^0.0.9"
   },
   "scripts": {
@@ -21,7 +28,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron-dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\""
+    "electron-dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-pack": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -35,7 +43,18 @@
   "devDependencies": {
     "concurrently": "^4.1.0",
     "electron": "https://github.com/castlabs/electron-releases#v5.0.0-wvvmp-beta.8",
-    "electron-builder": "^20.39.0",
+    "electron-builder": "^20.40.2",
     "wait-on": "^3.2.0"
+  },
+  "build": {
+    "appId": "spotify.tray",
+    "compression": "normal",
+    "directories": {
+      "buildResources": "build"
+    },
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ]
   }
 }

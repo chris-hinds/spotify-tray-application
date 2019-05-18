@@ -1,8 +1,7 @@
-const { app, BrowserWindow, Tray } = require("electron");
+const { app, BrowserWindow, Tray, ipcMain } = require("electron");
 const path = require("path");
 const os = require("os");
 const isDev = require("electron-is-dev");
-
 let tray = undefined;
 let window = undefined;
 // Don't show the app in the doc
@@ -50,21 +49,22 @@ const indexUrl = () => {
 };
 
 const openDevTools = () => {
-  if (isDev) {
-    window.openDevTools({ mode: "detach" });
-    BrowserWindow.addDevToolsExtension(
-      path.join(
-        os.homedir(),
-        "/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/3.6.0_0"
-      )
-    );
-  }
+  // if (isDev) {
+  window.openDevTools({ mode: "detach" });
+  BrowserWindow.addDevToolsExtension(
+    path.join(
+      os.homedir(),
+      "/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/3.6.0_0"
+    )
+  );
+  // }
 };
 
 const createWindow = () => {
   window = new BrowserWindow({
-    width: 600,
-    height: 200,
+    width: 400,
+    height: 600,
+    useContentSize: true,
     show: false,
     frame: false,
     fullscreenable: false,
@@ -80,3 +80,59 @@ const createWindow = () => {
     }
   });
 };
+
+ipcMain.on("open-auth-window", () => {
+  // Build the OAuth consent page URL
+  var authWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    show: false,
+    "node-integration": false
+  });
+  var githubUrl = "http://localhost/3000/login";
+  authWindow.loadURL(githubUrl);
+  authWindow.show();
+
+  function handleCallback(url) {
+    console.log(url);
+    // var raw_code = /code=([^&]*)/.exec(url) || null;
+    // var code = (raw_code && raw_code.length > 1) ? raw_code[1] : null;
+    // var error = /\?error=(.+)$/.exec(url);
+
+    // if (code || error) {
+    //   // Close the browser if code found or error
+    //   authWindow.destroy();
+    // }
+
+    // // If there is a code, proceed to get token from github
+    // if (code) {
+    //   self.requestGithubToken(options, code);
+    // } else if (error) {
+    //   alert('Oops! Something went wrong and we couldn\'t' +
+    //     'log you in using Github. Please try again.');
+    // }
+  }
+
+  // Handle the response from GitHub - See Update from 4/12/2015
+
+  authWindow.webContents.on("will-navigate", function(event, url) {
+    handleCallback(url);
+  });
+
+  authWindow.webContents.on("did-get-redirect-request", function(
+    event,
+    oldUrl,
+    newUrl
+  ) {
+    handleCallback(newUrl);
+  });
+
+  // Reset the authWindow on close
+  authWindow.on(
+    "close",
+    function() {
+      authWindow = null;
+    },
+    false
+  );
+});
