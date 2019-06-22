@@ -1,16 +1,46 @@
-const { app, BrowserWindow, Tray, ipcMain } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  Tray,
+  ipcMain,
+  ipcRenderer,
+  protocol
+} = require("electron");
 const path = require("path");
 const os = require("os");
 const isDev = require("electron-is-dev");
+const queryString = require("query-string");
+
 let tray = undefined;
 let window = undefined;
+let authWindow = undefined;
 // Don't show the app in the doc
 app.dock.hide();
 app.on("ready", () => {
   createTray();
   createWindow();
   openDevTools();
+  protocol.registerFileProtocol(
+    "spotifyauth",
+    request => {
+      const authObject = constructAuthObj(request);
+      window.send("auth-received", authObject);
+      authWindow.destroy();
+    },
+    error => {
+      if (error) console.error("Failed to register custom protocol");
+    }
+  );
 });
+
+const constructAuthObj = request => {
+  const parsedUrl = queryString.parse(request.url);
+
+  return {
+    refreshToken: parsedUrl.refresh_token,
+    accessToken: parsedUrl["spotifyauth://callback?access_token"]
+  };
+};
 
 const createTray = () => {
   tray = new Tray(path.join(__dirname, "trayIcon.png"));
@@ -49,15 +79,15 @@ const indexUrl = () => {
 };
 
 const openDevTools = () => {
-  // if (isDev) {
-  window.openDevTools({ mode: "detach" });
-  BrowserWindow.addDevToolsExtension(
-    path.join(
-      os.homedir(),
-      "/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/3.6.0_0"
-    )
-  );
-  // }
+  if (isDev) {
+    window.openDevTools({ mode: "detach" });
+    BrowserWindow.addDevToolsExtension(
+      path.join(
+        os.homedir(),
+        "/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/3.6.0_0"
+      )
+    );
+  }
 };
 
 const createWindow = () => {
@@ -70,7 +100,10 @@ const createWindow = () => {
     fullscreenable: false,
     resizable: false,
     transparent: false,
-    alwaysOnTop: true
+    alwaysOnTop: true,
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
   window.loadURL(indexUrl());
   // Hide the window when it loses focus
@@ -83,48 +116,36 @@ const createWindow = () => {
 
 ipcMain.on("open-auth-window", () => {
   // Build the OAuth consent page URL
-  var authWindow = new BrowserWindow({
+  authWindow = new BrowserWindow({
     width: 800,
     height: 600,
     show: false,
-    "node-integration": false
+    webPreferences: {
+      nodeIntegration: false
+    }
   });
-  var githubUrl = "http://localhost/3000/login";
-  authWindow.loadURL(githubUrl);
+
+  const authServer = "https://salty-fjord-94211.herokuapp.com/login";
+  authWindow.loadURL(authServer);
   authWindow.show();
 
   function handleCallback(url) {
-    console.log(url);
-    // var raw_code = /code=([^&]*)/.exec(url) || null;
-    // var code = (raw_code && raw_code.length > 1) ? raw_code[1] : null;
-    // var error = /\?error=(.+)$/.exec(url);
-
-    // if (code || error) {
-    //   // Close the browser if code found or error
-    //   authWindow.destroy();
-    // }
-
-    // // If there is a code, proceed to get token from github
-    // if (code) {
-    //   self.requestGithubToken(options, code);
-    // } else if (error) {
-    //   alert('Oops! Something went wrong and we couldn\'t' +
-    //     'log you in using Github. Please try again.');
-    // }
+    if (
+      url.startsWith("http://localhost:8888/callback?") ||
+      url.startsWith("https://salty-fjord-94211.herokuapp.com")
+    ) {
+      authWindow.loadURL(url);
+    } else {
+      console.error(console.log("unexpected callback url."));
+    }
   }
-
-  // Handle the response from GitHub - See Update from 4/12/2015
 
   authWindow.webContents.on("will-navigate", function(event, url) {
     handleCallback(url);
   });
 
-  authWindow.webContents.on("did-get-redirect-request", function(
-    event,
-    oldUrl,
-    newUrl
-  ) {
-    handleCallback(newUrl);
+  authWindow.webContents.on("will-redirect", function(event, oldUrl, newUrl) {
+    handleCallback(oldUrl);
   });
 
   // Reset the authWindow on close
