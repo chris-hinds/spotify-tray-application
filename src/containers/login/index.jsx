@@ -10,6 +10,7 @@ const Login = ({ history }) => {
 
   useEffect(() => {
     const localAccessToken = localStorage.getItem("authToken");
+    console.log(`Local Access Token: ${localAccessToken}`);
     if (localAccessToken) {
       userDispatch(setUserLogin({ accessToken: localAccessToken }));
       history.push("/player");
@@ -21,10 +22,11 @@ const Login = ({ history }) => {
   const handleLogin = (e, data) => {
     const { accessToken, refreshToken } = data;
     if (accessToken && refreshToken) {
+      localStorage.setItem("authToken", accessToken);
       userDispatch(
         setUserLogin({
           accessToken: accessToken,
-          refreshToken: refreshToken
+          refreshToken: refreshToken,
         })
       );
       history.push("/player");

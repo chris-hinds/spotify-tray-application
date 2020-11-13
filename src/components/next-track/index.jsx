@@ -6,7 +6,6 @@ const Wrapper = styled.div`
   grid-area: nextTracks;
   align-self: center;
   background-color: white;
-  height: 50px;
   border-radius: 5px;
 `;
 

@@ -12,7 +12,7 @@ import {
   playerNextTrack,
   playerPrevTrack,
   playerPause,
-  playerPlay
+  playerPlay,
 } from "../../spotify/playerControls";
 
 // components
@@ -42,7 +42,7 @@ const Player = () => {
         nextTrack={() => playerNextTrack(userState.accessToken)}
         prevTrack={() => playerPrevTrack(userState.accessToken)}
       />
-      <PlayerProgress duration={duration} position={position} />
+      {/* <PlayerProgress duration={duration} position={position} /> */}
 
       {nextTracks && <PlayerNextTracks nextTracks={nextTracks} />}
     </PlayerGrid>

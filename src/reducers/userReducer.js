@@ -1,30 +1,23 @@
 import * as Constants from "../contsants";
 
-const setAccessToken = data => ({
-  type: Constants.ACTION_SET_ACCESS_TOKEN,
-  data
-});
-
-const setUserLogin = data => ({
+const setUserLogin = (data) => ({
   type: Constants.ACTION_SET_USER_LOGIN,
-  data
+  data,
 });
 
-const setUserLogout = data => ({
+const setUserLogout = (data) => ({
   type: Constants.ACTION_SET_USER_LOGOUT,
-  data
+  data,
 });
 
 const userReducer = (playerState, action) => {
   const { data, type } = action;
 
   switch (type) {
-    case Constants.ACTION_SET_ACCESS_TOKEN:
-      return { ...playerState, accessToken: data };
     case Constants.ACTION_SET_USER_LOGIN:
       return {
         ...playerState,
-        ...data
+        ...data,
       };
     case Constants.ACTION_SET_USER_LOGOUT:
       return Constants.INITIAL_USER_STATE;
@@ -33,4 +26,4 @@ const userReducer = (playerState, action) => {
   }
 };
 
-export { userReducer, setAccessToken, setUserLogin, setUserLogout };
+export { userReducer, setUserLogin, setUserLogout };

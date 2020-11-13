@@ -4,7 +4,7 @@ const {
   Tray,
   ipcMain,
   ipcRenderer,
-  protocol
+  protocol,
 } = require("electron");
 const path = require("path");
 const os = require("os");
@@ -16,35 +16,35 @@ let window = undefined;
 let authWindow = undefined;
 // Don't show the app in the doc
 app.dock.hide();
-app.on("ready", () => {
+app.on("widevine-ready", () => {
   createTray();
   createWindow();
   openDevTools();
   protocol.registerFileProtocol(
     "spotifyauth",
-    request => {
+    (request) => {
       const authObject = constructAuthObj(request);
       window.send("auth-received", authObject);
       authWindow.destroy();
     },
-    error => {
-      if (error) console.error("Failed to register custom protocol");
+    (error) => {
+      if (error) console.error(`Failed to register custom protocol: ${error}`);
     }
   );
 });
 
-const constructAuthObj = request => {
+const constructAuthObj = (request) => {
   const parsedUrl = queryString.parse(request.url);
 
   return {
     refreshToken: parsedUrl.refresh_token,
-    accessToken: parsedUrl["spotifyauth://callback?access_token"]
+    accessToken: parsedUrl["spotifyauth://callback?access_token"],
   };
 };
 
 const createTray = () => {
   tray = new Tray(path.join(__dirname, "trayIcon.png"));
-  tray.on("click", function(event) {
+  tray.on("click", function (event) {
     toggleWindow();
   });
 };
@@ -92,7 +92,7 @@ const openDevTools = () => {
 
 const createWindow = () => {
   window = new BrowserWindow({
-    width: 400,
+    width: 360,
     height: 600,
     useContentSize: true,
     show: false,
@@ -102,8 +102,8 @@ const createWindow = () => {
     transparent: false,
     alwaysOnTop: true,
     webPreferences: {
-      nodeIntegration: true
-    }
+      nodeIntegration: true,
+    },
   });
   window.loadURL(indexUrl());
   // Hide the window when it loses focus
@@ -121,8 +121,8 @@ ipcMain.on("open-auth-window", () => {
     height: 600,
     show: false,
     webPreferences: {
-      nodeIntegration: false
-    }
+      nodeIntegration: false,
+    },
   });
 
   const authServer = "https://salty-fjord-94211.herokuapp.com/login";
@@ -140,18 +140,18 @@ ipcMain.on("open-auth-window", () => {
     }
   }
 
-  authWindow.webContents.on("will-navigate", function(event, url) {
+  authWindow.webContents.on("will-navigate", function (event, url) {
     handleCallback(url);
   });
 
-  authWindow.webContents.on("will-redirect", function(event, oldUrl, newUrl) {
+  authWindow.webContents.on("will-redirect", function (event, oldUrl, newUrl) {
     handleCallback(oldUrl);
   });
 
   // Reset the authWindow on close
   authWindow.on(
     "close",
-    function() {
+    function () {
       authWindow = null;
     },
     false
